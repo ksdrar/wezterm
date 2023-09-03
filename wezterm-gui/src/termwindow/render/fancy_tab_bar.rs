@@ -179,17 +179,25 @@ impl crate::TermWindow {
                     .border(BoxDimension::new(Dimension::Pixels(1.)))
                     .border_corners(Some(Corners {
                         top_left: SizedPoly {
-                            width: Dimension::Cells(0.5),
-                            height: Dimension::Cells(0.5),
+                            width: Dimension::Cells(0.4),
+                            height: Dimension::Cells(0.4),
                             poly: TOP_LEFT_ROUNDED_CORNER,
                         },
                         top_right: SizedPoly {
-                            width: Dimension::Cells(0.5),
-                            height: Dimension::Cells(0.5),
+                            width: Dimension::Cells(0.4),
+                            height: Dimension::Cells(0.4),
                             poly: TOP_RIGHT_ROUNDED_CORNER,
                         },
-                        bottom_left: SizedPoly::none(),
-                        bottom_right: SizedPoly::none(),
+                        bottom_left: SizedPoly {
+                            width: Dimension::Cells(0.4),
+                            height: Dimension::Cells(0.4),
+                            poly: BOTTOM_LEFT_ROUNDED_CORNER,
+                        },
+                        bottom_right: SizedPoly {
+                            width: Dimension::Cells(0.4),
+                            height: Dimension::Cells(0.4),
+                            poly: BOTTOM_RIGHT_ROUNDED_CORNER,
+                        },
                     }))
                     .colors(ElementColors {
                         border: BorderColor::new(
@@ -224,24 +232,24 @@ impl crate::TermWindow {
                     .border(BoxDimension::new(Dimension::Pixels(1.)))
                     .border_corners(Some(Corners {
                         top_left: SizedPoly {
-                            width: Dimension::Cells(0.5),
-                            height: Dimension::Cells(0.5),
+                            width: Dimension::Cells(0.4),
+                            height: Dimension::Cells(0.4),
                             poly: TOP_LEFT_ROUNDED_CORNER,
                         },
                         top_right: SizedPoly {
-                            width: Dimension::Cells(0.5),
-                            height: Dimension::Cells(0.5),
+                            width: Dimension::Cells(0.4),
+                            height: Dimension::Cells(0.4),
                             poly: TOP_RIGHT_ROUNDED_CORNER,
                         },
                         bottom_left: SizedPoly {
-                            width: Dimension::Cells(0.),
-                            height: Dimension::Cells(0.33),
-                            poly: &[],
+                            width: Dimension::Cells(0.4),
+                            height: Dimension::Cells(0.4),
+                            poly: BOTTOM_LEFT_ROUNDED_CORNER,
                         },
                         bottom_right: SizedPoly {
-                            width: Dimension::Cells(0.),
-                            height: Dimension::Cells(0.33),
-                            poly: &[],
+                            width: Dimension::Cells(0.4),
+                            height: Dimension::Cells(0.4),
+                            poly: BOTTOM_RIGHT_ROUNDED_CORNER,
                         },
                     }))
                     .colors({
@@ -401,6 +409,10 @@ impl crate::TermWindow {
                         }
                     };
                     left_eles.push(elem);
+                    left_eles.push(
+                        Element::new(&font, ElementContent::Text(String::new()))
+                            .min_width(Some(Dimension::Pixels(8.0))),
+                    )
                 }
                 _ => left_eles.push(item_to_elem(item)),
             }
