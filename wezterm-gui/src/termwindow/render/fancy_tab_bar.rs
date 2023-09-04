@@ -7,6 +7,7 @@ use crate::termwindow::render::window_buttons::window_button_element;
 use crate::termwindow::{UIItem, UIItemType};
 use crate::utilsprites::RenderMetrics;
 use config::{Dimension, DimensionContext, TabBarColors};
+use termwiz::color::LinearRgba;
 use wezterm_term::color::{ColorAttribute, ColorPalette};
 use window::{IntegratedTitleButtonAlignment, IntegratedTitleButtonStyle};
 
@@ -71,12 +72,17 @@ impl crate::TermWindow {
         let mut right_eles = vec![];
         let bar_colors = ElementColors {
             border: BorderColor::default(),
-            bg: rgbcolor_to_window_color(if self.focused.is_some() {
-                self.config.window_frame.active_titlebar_bg
-            } else {
-                self.config.window_frame.inactive_titlebar_bg
-            })
-            .into(),
+            bg: {
+                let (r, g, b, _) = if self.focused.is_some() {
+                    self.config.window_frame.active_titlebar_bg
+                } else {
+                    self.config.window_frame.inactive_titlebar_bg
+                }
+                .to_linear_tuple_rgba()
+                .tuple();
+
+                LinearRgba::with_components(r, g, b, self.config.window_background_opacity).into()
+            },
             text: rgbcolor_to_window_color(if self.focused.is_some() {
                 self.config.window_frame.active_titlebar_fg
             } else {
@@ -347,66 +353,7 @@ impl crate::TermWindow {
                     elem.content = match elem.content {
                         ElementContent::Text(_) => unreachable!(),
                         ElementContent::Poly { .. } => unreachable!(),
-                        ElementContent::Children(mut kids) => {
-                            let x_button = Element::new(
-                                &font,
-                                ElementContent::Poly {
-                                    line_width: metrics.underline_height.max(2),
-                                    poly: SizedPoly {
-                                        poly: X_BUTTON,
-                                        width: Dimension::Pixels(
-                                            metrics.cell_size.height as f32 / 2.,
-                                        ),
-                                        height: Dimension::Pixels(
-                                            metrics.cell_size.height as f32 / 2.,
-                                        ),
-                                    },
-                                },
-                            )
-                            // Ensure that we draw our background over the
-                            // top of the rest of the tab contents
-                            .zindex(1)
-                            .vertical_align(VerticalAlign::Middle)
-                            .float(Float::Right)
-                            .item_type(UIItemType::CloseTab(tab_idx))
-                            .hover_colors({
-                                let inactive_tab_hover = colors.inactive_tab_hover();
-                                let active_tab = colors.active_tab();
-
-                                Some(ElementColors {
-                                    border: BorderColor::default(),
-                                    bg: (if active {
-                                        inactive_tab_hover.bg_color
-                                    } else {
-                                        active_tab.bg_color
-                                    })
-                                    .to_linear()
-                                    .into(),
-                                    text: (if active {
-                                        inactive_tab_hover.fg_color
-                                    } else {
-                                        active_tab.fg_color
-                                    })
-                                    .to_linear()
-                                    .into(),
-                                })
-                            })
-                            .padding(BoxDimension {
-                                left: Dimension::Cells(0.25),
-                                right: Dimension::Cells(0.25),
-                                top: Dimension::Cells(0.25),
-                                bottom: Dimension::Cells(0.25),
-                            })
-                            .margin(BoxDimension {
-                                left: Dimension::Cells(0.5),
-                                right: Dimension::Cells(0.),
-                                top: Dimension::Cells(0.),
-                                bottom: Dimension::Cells(0.),
-                            });
-
-                            kids.push(x_button);
-                            ElementContent::Children(kids)
-                        }
+                        ElementContent::Children(mut kids) => ElementContent::Children(kids),
                     };
                     left_eles.push(elem);
                     left_eles.push(
