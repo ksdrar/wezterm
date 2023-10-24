@@ -1668,6 +1668,10 @@ pub(crate) fn compute_runtime_dir() -> anyhow::Result<PathBuf> {
         return Ok(runtime.join("wezterm"));
     }
 
+    if let Some(data_local) = dirs_next::data_local_dir() {
+        return Ok(data_local.join("wezterm"));
+    }
+
     Ok(crate::HOME_DIR.join(".local/share/wezterm"))
 }
 
