@@ -91,6 +91,12 @@ impl crate::TermWindow {
             .into(),
         };
 
+        let section_colors = {
+            let mut colors = bar_colors.clone();
+            colors.bg = LinearRgba::TRANSPARENT.into();
+            colors
+        };
+
         let item_to_elem = |item: &TabEntry| -> Element {
             let element = Element::with_line(&font, &item.title, palette);
 
@@ -401,7 +407,7 @@ impl crate::TermWindow {
         children.push(
             Element::new(&font, ElementContent::Children(left_eles))
                 .vertical_align(VerticalAlign::Bottom)
-                .colors(bar_colors.clone())
+                .colors(section_colors.clone())
                 .padding(BoxDimension {
                     left: left_padding,
                     right: Dimension::Cells(0.),
@@ -412,7 +418,7 @@ impl crate::TermWindow {
         );
         children.push(
             Element::new(&font, ElementContent::Children(right_eles))
-                .colors(bar_colors.clone())
+                .colors(section_colors.clone())
                 .float(Float::Right),
         );
 
